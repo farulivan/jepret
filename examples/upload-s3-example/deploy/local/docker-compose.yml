@@ -1,0 +1,32 @@
+version: '2.4'
+services:
+  localstack:
+    image: localstack/localstack:1.2.0
+    healthcheck:
+      test: curl -s localhost:4566/health 2>&1 | grep -c initialized > /dev/null
+    environment:
+      - USE_SINGLE_REGION=true
+      - DEFAULT_REGION=eu-west-1
+      - DISABLE_CORS_CHECKS=1
+      - BUCKET_NAME=example-bucket
+    volumes:
+      - ./init-localstack.sh:/docker-entrypoint-initaws.d/init-localstack.sh
+    ports:
+      - 4566:4566
+  server:
+    build:
+      context: ../../
+      dockerfile: ./deploy/local/Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      - AWS_ACCESS_KEY_ID=this_is_dummy_access_key
+      - AWS_SECRET_ACCESS_KEY=this_is_dummy_secret_key
+      - AWS_REGION=ap-southeast-1
+      - AWS_ENDPOINT_URL=http://localhost:4566
+      - AWS_BUCKET_NAME=example-bucket
+    volumes:
+      - ../../client.html:/app/client.html

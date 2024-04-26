@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Upload S3 Example using LocalStack</title>
+</head>
+<body>
+	<h3>Upload File Example to Local S3</h3>
+    <form action="#" id="uploadForm">
+        <input type="file" accept="image/jpeg" name="supportFileInput" id="supportFileInput">
+        <input type="submit" value="Upload">
+    </form>
+
+    <p id="uploadProgress"></p>
+    <p id="downloadURL"></p>
+	<img id=previewImage src="#" style="max-width: 500px;" alt="">
+
+    <script>
+        uploadForm.onsubmit = async (e) => {
+            // prevent submit form to execute its default behavior
+            e.preventDefault();
+            // clear page
+            clearPage();
+            // check whether user already choose file to upload
+            if (supportFileInput.files.length == 0) {
+                return
+            }
+            // get presigned upload url
+            const supportFile = supportFileInput.files[0];
+            const url = `/photo-url`;
+            const response = await fetch(url, { method: 'GET' })
+            const uploadURL = await response.text();
+            // upload file to presigned upload url
+            const uploadResponse = await uploadToS3(uploadURL, supportFile, (progress) => {
+                uploadProgress.innerHTML = `Upload progress: ${Math.floor(progress * 100)}%`
+            });
+            if (uploadResponse.status == 200) {
+                alert("successfully upload file!");
+				const imageURL = uploadURL.split("?")[0];
+                downloadURL.innerHTML = `Download URL: ${imageURL}`;
+				previewImage.src = imageURL;
+            } else {
+                console.log(uploadResponse.body);
+                alert("unable to upload file, check console for details");
+            }
+            clearForm();
+        }
+
+        function uploadToS3(uploadURL, file, onProgress) {
+            return new Promise((resolve) => {
+                const xhr = new XMLHttpRequest();
+                xhr.upload.addEventListener("progress", e => {
+                    if (e.lengthComputable) {
+                        onProgress(e.loaded / e.total);
+                    }
+                })
+                xhr.onreadystatechange = e => {
+                    if (xhr.readyState !== xhr.DONE) {
+                        return
+                    }
+                    resolve({ status: xhr.status, body: xhr.responseText });
+                }
+                xhr.open("PUT", uploadURL, true);
+                xhr.setRequestHeader("x-amz-acl", "public-read");
+                xhr.send(file);
+            });
+        }
+
+        function clearForm() {
+            uploadForm.reset();
+        }
+
+        function clearPage() {
+            uploadProgress.innerHTML = "";
+            downloadURL.innerHTML = "";
+			previewImage.src = "#";
+        }
+    </script>
+</body>
+</html>
