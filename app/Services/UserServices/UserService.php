@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Services\UserService;
+namespace App\Services\UserServices;
 
-use App\Models\User;
-use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\User\Eloquent\UserRepositoryInterface;
 
 /**
  * Class UserService
@@ -23,9 +22,9 @@ class UserService implements UserServiceInterface
      * Retrieve a user by email.
      *
      * @param string $email The email of the user to retrieve.
-     * @return \App\Models\User|null The user with the specified email, or null if not found.
+     * @return object|null The user with the specified email, or null if not found.
      */
-    public function getByEmail($email): ?User
+    public function getByEmail($email): ?object
     {
         return $this->userRepository->getByEmail($email);
     }

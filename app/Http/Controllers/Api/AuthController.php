@@ -7,8 +7,8 @@ use App\Helpers\JsonResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
-use App\Services\AuthService\AuthServiceInterface;
-use App\Services\UserService\UserServiceInterface;
+use App\Services\AuthServices\AuthServiceInterface;
+use App\Services\UserServices\UserServiceInterface;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller

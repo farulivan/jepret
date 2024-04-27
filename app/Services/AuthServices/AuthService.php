@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services\AuthService;
+namespace App\Services\AuthServices;
 
 use App\Enums\AuthEnum;
-use App\Models\User;
+use App\Repositories\User\Eloquent\UserRepositoryInterface;
 
 /**
  * Class AuthService
@@ -12,6 +12,13 @@ use App\Models\User;
  */
 class AuthService implements AuthServiceInterface
 {
+    protected $userRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * Validate user authentication attempt.
      *
@@ -29,8 +36,8 @@ class AuthService implements AuthServiceInterface
             return false;
         }
 
-        // Attempt to find the user by email
-        $user = User::where('email', $email)->first();
+        // Retrieve user by email
+        $user = $this->userRepository->getByEmail($email);
 
         // If user does not exist or password does not match, authentication fails
         if (!$user || $user->password !== $password) {
@@ -44,10 +51,10 @@ class AuthService implements AuthServiceInterface
     /**
      * Create a new access token for the user.
      *
-     * @param  \App\Models\User  $user
+     * @param  object  $user The user data.
      * @return string
      */
-    public function createAccessToken(User $user): string
+    public function createAccessToken(object $user): string
     {
         $token = $user->createToken(
             AuthEnum::AUTH_TOKEN_NAME,
@@ -61,10 +68,10 @@ class AuthService implements AuthServiceInterface
     /**
      * Create a new refresh token for the user.
      *
-     * @param  \App\Models\User  $user
+     * @param  object  $user The user data.
      * @return string
      */
-    public function createRefreshToken(User $user): string
+    public function createRefreshToken(object $user): string
     {
         $token = $user->createToken(AuthEnum::REFRESH_TOKEN_NAME, [AuthEnum::REFRESH_TOKEN_ABILITY])
             ->plainTextToken;
@@ -74,10 +81,10 @@ class AuthService implements AuthServiceInterface
     /**
      * Check if the user has a refresh token.
      *
-     * @param  \App\Models\User  $user
+     * @param  object  $user The user data.
      * @return bool
      */
-    public function isAuthHasRefreshToken(User $user): bool
+    public function isAuthHasRefreshToken(object $user): bool
     {
         return $user->tokenCan(AuthEnum::REFRESH_TOKEN_ABILITY);
     }
@@ -85,10 +92,10 @@ class AuthService implements AuthServiceInterface
     /**
      * Check if the user has an access token.
      *
-     * @param  \App\Models\User  $user
+     * @param  object  $user The user data.
      * @return bool
      */
-    public function isAuthHasAccessToken(User $user): bool
+    public function isAuthHasAccessToken(object $user): bool
     {
         return $user->tokenCan(AuthEnum::AUTH_TOKEN_ABILITY);
     }
