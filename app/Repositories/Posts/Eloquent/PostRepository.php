@@ -3,12 +3,13 @@
 namespace App\Repositories\Posts\Eloquent;
 
 use App\Models\Post;
+use App\Repositories\BaseRepositoryInterface;
 use App\Repositories\Posts\PostRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class PostRepository implements PostRepositoryInterface
+class PostRepository implements PostRepositoryInterface, BaseRepositoryInterface
 {
-    public function get()
+    public function get(): \Illuminate\Database\Eloquent\Collection|array|null
     {
         return Post::query()
             ->select([
@@ -25,7 +26,7 @@ class PostRepository implements PostRepositoryInterface
             ->get();
     }
 
-    public function create(array $data, array $options = [])
+    public function create(array $data, array $options = []): object
     {
         return Post::create($data);
     }
