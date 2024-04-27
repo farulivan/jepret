@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,3 +19,7 @@ Route::get("ping", function () {
 });
 
 Route::post("session", [AuthController::class, 'login']);
+Route::put("session", fn () => '');
+Route::get("posts", fn () => '');
+Route::post("photo-url", fn () => '');
+Route::post("posts", fn () => '');

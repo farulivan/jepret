@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use App\Helpers\JsonResponseHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService\AuthServiceInterface;
 use App\Services\UserService\UserServiceInterface;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -39,5 +41,9 @@ class AuthController extends Controller
         $accessToken = $this->authService->createAccessToken($user);
         $refreshToken = $this->authService->createRefreshToken($user);
         return JsonResponseHelper::successLogin(new UserResource($user), $accessToken, $refreshToken);
+    }
+
+    public function refreshAccessToken(Request $request)
+    {
     }
 }
