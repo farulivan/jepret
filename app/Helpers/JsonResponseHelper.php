@@ -49,6 +49,15 @@ class JsonResponseHelper
         ], HttpStatus::UNAUTHORIZED);
     }
 
+    public static function unauthorizedErrorAccessToken()
+    {
+        return response()->json([
+            "ok" => false,
+            "err" => ErrorType::INVALID_ACCESS_TOKEN,
+            "msg" => ErrorMessage::INVALID_ACCESS_TOKEN,
+        ], HttpStatus::UNAUTHORIZED);
+    }
+
     public static function badRequestError($errorField)
     {
         return response()->json([
