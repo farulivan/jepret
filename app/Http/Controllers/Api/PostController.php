@@ -66,7 +66,7 @@ class PostController extends Controller
             }
 
             $data = $this->postService->store(
-                $request->user(),
+                $request->bearerToken(),
                 $validator->valid()
             );
         } catch (\Exception $exception) {

@@ -12,5 +12,5 @@ interface PostServiceInterface
 
     public function generatePhotoUrl(): string|null;
 
-    public function store(Authenticatable|User $user, array $data);
+    public function store(string $token, array $data);
 }

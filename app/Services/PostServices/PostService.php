@@ -4,15 +4,18 @@ namespace App\Services\PostServices;
 
 use App\Models\User;
 use App\Repositories\Posts\PostRepositoryInterface;
+use App\Repositories\Token\TokenRepositoryInterface;
 use Aws\S3\S3Client;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 
 class PostService implements PostServiceInterface
 {
-    public function __construct(protected PostRepositoryInterface $postRepository)
-    {
-    }
+    public function __construct(
+        protected PostRepositoryInterface $postRepository,
+        protected TokenRepositoryInterface $tokenRepository
+    )
+    {}
 
     public function getPosts(): Collection|array|null
     {
@@ -47,9 +50,10 @@ class PostService implements PostServiceInterface
         return (string)$presignedRequest->getUri();
     }
 
-    public function store(Authenticatable|User $user, array $data)
+    public function store(string $token, array $data)
     {
-        $data['user_id'] = $user->id;
+        $user = $this->tokenRepository->findToken($token);
+        $data['author_id'] = $user->tokenable_id;
         $data['created_at'] = time();
 
         return $this->postRepository->create($data);
