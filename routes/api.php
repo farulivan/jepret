@@ -23,4 +23,4 @@ Route::post("session", [AuthController::class, 'login']);
 Route::put("session", [AuthController::class, 'refreshAccessToken']);
 Route::get("/posts", [PostController::class, 'discoverPost']);
 Route::post("/photo-url", [PostController::class, 'requestPhotoUrl']);
-Route::post("/posts", [PostController::class, 'storePost']);
+Route::post("/posts", [PostController::class, 'storePost'])->middleware(['auth.token']);
