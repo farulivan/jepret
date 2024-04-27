@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\JsonResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RefreshTokenRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthServices\AuthServiceInterface;
 use App\Services\UserServices\UserServiceInterface;
@@ -46,12 +46,12 @@ class AuthController extends Controller
     /**
      * Refreshes the user's access token.
      *
-     * @param RefreshTokenRequest $request
+     * @param Request $request
      * @return JsonResponse
      */
-    public function refreshAccessToken(RefreshTokenRequest $request): JsonResponse
+    public function refreshAccessToken(Request $request): JsonResponse
     {
-        $refreshToken = $request->refreshToken();
+        $refreshToken = $request->bearerToken();
 
         if (!$this->authService->isRefreshTokenValid($refreshToken)) {
             return JsonResponseHelper::unauthorizedErrorRefreshToken();
