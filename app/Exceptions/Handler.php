@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use App\Helpers\JsonResponseHelper;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -25,6 +27,13 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // This code will handle the 500, it should be in the last order.
+        $this->renderable(function (Throwable $e, Request $request,) {
+            if ($request->expectsJson()) {
+                return JsonResponseHelper::internalServerError($e->getMessage());
+            }
         });
     }
 }

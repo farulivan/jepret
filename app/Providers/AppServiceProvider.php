@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\UserService\UserService;
+use App\Services\UserService\UserServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->app->singleton(UserServiceInterface::class, UserService::class);
     }
 }
