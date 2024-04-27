@@ -17,7 +17,7 @@ class PostRepository implements PostRepositoryInterface, BaseRepositoryInterface
                 DB::raw('posts.photo_url as photo_url'),
                 DB::raw('posts.caption as caption'),
                 DB::raw('users.id as author_id'),
-                DB::raw('users.name as author_handle'),
+                DB::raw('users.handle as author_handle'),
                 DB::raw('posts.created_at as created_at'),
             ])
             ->join('users', 'posts.author_id', '=', 'users.id')
