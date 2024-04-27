@@ -4,7 +4,7 @@ namespace App\Services\AuthServices;
 
 use App\Enums\AuthEnum;
 use App\Repositories\Token\TokenRepositoryInterface;
-use App\Repositories\User\Eloquent\UserRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
 
 /**
  * Class AuthService

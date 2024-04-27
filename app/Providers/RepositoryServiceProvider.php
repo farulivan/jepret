@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\User\Eloquent\UserRepository;
-use App\Repositories\User\Eloquent\UserRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Token\Sanctum\TokenRepository;
 use App\Repositories\Token\TokenRepositoryInterface;
 
