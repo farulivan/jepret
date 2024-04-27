@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\User\Eloquent\UserRepository;
-use App\Repositories\User\Eloquent\UserRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\Token\Sanctum\TokenRepository;
+use App\Repositories\Token\TokenRepositoryInterface;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -22,5 +24,6 @@ class RepositoryServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(TokenRepositoryInterface::class, TokenRepository::class);
     }
 }

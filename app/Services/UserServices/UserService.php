@@ -2,7 +2,7 @@
 
 namespace App\Services\UserServices;
 
-use App\Repositories\User\Eloquent\UserRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
 
 /**
  * Class UserService
