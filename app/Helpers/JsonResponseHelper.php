@@ -30,6 +30,25 @@ class JsonResponseHelper
         ], HttpStatus::UNAUTHORIZED);
     }
 
+    public static function successRefreshToken($accessToken)
+    {
+        return response()->json([
+            "ok" => true,
+            "data" => [
+                "access_token" => $accessToken
+            ]
+        ], HttpStatus::SUCCESS);
+    }
+
+    public static function unauthorizedErrorRefreshToken()
+    {
+        return response()->json([
+            "ok" => false,
+            "err" => ErrorType::INVALID_REFRESH_TOKEN,
+            "msg" => ErrorMessage::INVALID_REFRESH_TOKEN,
+        ], HttpStatus::UNAUTHORIZED);
+    }
+
     public static function badRequestError($errorField)
     {
         return response()->json([

@@ -6,10 +6,10 @@ use Illuminate\Http\JsonResponse;
 use App\Helpers\JsonResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RefreshTokenRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthServices\AuthServiceInterface;
 use App\Services\UserServices\UserServiceInterface;
-use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -25,8 +25,8 @@ class AuthController extends Controller
     /**
      * Handle user login.
      *
-     * @param  \App\Http\Requests\LoginRequest  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param LoginRequest  $request
+     * @return JsonResponse
      */
     public function login(LoginRequest $request): JsonResponse
     {
@@ -43,7 +43,26 @@ class AuthController extends Controller
         return JsonResponseHelper::successLogin(new UserResource($user), $accessToken, $refreshToken);
     }
 
-    public function refreshAccessToken(Request $request)
+    /**
+     * Refreshes the user's access token.
+     *
+     * @param RefreshTokenRequest $request
+     * @return JsonResponse
+     */
+    public function refreshAccessToken(RefreshTokenRequest $request): JsonResponse
     {
+        $refreshToken = $request->refreshToken();
+
+        if (!$this->authService->isRefreshTokenValid($refreshToken)) {
+            return JsonResponseHelper::unauthorizedErrorRefreshToken();
+        }
+
+        $user = $this->authService->getUserFromRefreshToken($refreshToken);
+        if (!$user) {
+            return JsonResponseHelper::unauthorizedErrorRefreshToken();
+        }
+
+        $newAccessToken = $this->authService->createAccessToken($user);
+        return JsonResponseHelper::successRefreshToken($newAccessToken);
     }
 }

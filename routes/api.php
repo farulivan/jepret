@@ -19,7 +19,7 @@ Route::get("ping", function () {
 });
 
 Route::post("session", [AuthController::class, 'login']);
-Route::put("session", fn () => '');
+Route::put("session", [AuthController::class, 'refreshAccessToken']);
 Route::get("posts", fn () => '');
 Route::post("photo-url", fn () => '');
 Route::post("posts", fn () => '');

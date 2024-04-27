@@ -3,6 +3,7 @@
 namespace App\Services\AuthServices;
 
 use App\Enums\AuthEnum;
+use App\Repositories\Token\TokenRepositoryInterface;
 use App\Repositories\User\Eloquent\UserRepositoryInterface;
 
 /**
@@ -13,10 +14,12 @@ use App\Repositories\User\Eloquent\UserRepositoryInterface;
 class AuthService implements AuthServiceInterface
 {
     protected $userRepository;
+    protected $tokenRepository;
 
-    public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository, TokenRepositoryInterface $tokenRepository)
     {
         $this->userRepository = $userRepository;
+        $this->tokenRepository = $tokenRepository;
     }
 
     /**
@@ -46,6 +49,44 @@ class AuthService implements AuthServiceInterface
 
         // Authentication successful
         return true;
+    }
+
+    /**
+     * Validates whether a refresh token is valid.
+     *
+     * @param string|null $refreshToken The refresh token to validate.
+     * @return bool True if the refresh token is valid, otherwise false.
+     */
+    public function isRefreshTokenValid(?string $refreshToken): bool
+    {
+        if ($refreshToken === null) {
+            return false;
+        }
+
+        if (!$this->tokenRepository->findToken($refreshToken)) {
+            return false;
+        }
+
+        if ($this->tokenRepository->isTokenExpired($refreshToken)) {
+            return false;
+        }
+
+        if (!$this->tokenRepository->tokenHasAbility($refreshToken, AuthEnum::REFRESH_TOKEN_ABILITY)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Retrieves the user associated with a given refresh token.
+     *
+     * @param string $refreshToken The refresh token whose associated user is to be retrieved.
+     * @return object|null The user object if found, otherwise null.
+     */
+    public function getUserFromRefreshToken(string $refreshToken): ?object
+    {
+        return $this->tokenRepository->getUserFromToken($refreshToken);
     }
 
     /**
