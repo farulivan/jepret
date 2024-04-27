@@ -49,7 +49,7 @@ class PostController extends Controller
 
         return response()->json([
             'ok' => true,
-            'data' => $data,
+            'data' => ['photo_url' => $data],
         ]);
     }
 
