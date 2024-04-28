@@ -2,19 +2,16 @@
 
 namespace App\Http\Middleware;
 
-use App\Helpers\JsonResponseHelper;
 use Closure;
 use Illuminate\Http\Request;
-use App\Repositories\Token\TokenRepositoryInterface;
-use Illuminate\Support\Str;
+use App\Helpers\JsonResponseHelper;
+use App\Services\AuthServices\AuthService;
 
 class ValidateAccessToken
 {
-    protected $tokenRepository;
 
-    public function __construct(TokenRepositoryInterface $tokenRepository)
+    public function __construct(protected AuthService $authService)
     {
-        $this->tokenRepository = $tokenRepository;
     }
 
     /**
@@ -26,14 +23,9 @@ class ValidateAccessToken
      */
     public function handle(Request $request, Closure $next)
     {
-        $token = $request->bearerToken();
-        $tokenModel = $this->tokenRepository->findToken($token);
+        $accessToken = $request->bearerToken();
 
-        if (Str::lower($tokenModel->name ?? '') != \App\Enums\AuthEnum::AUTH_TOKEN_NAME) {
-            return JsonResponseHelper::unauthorizedErrorAccessToken();
-        }
-
-        if (!$tokenModel || $this->tokenRepository->isTokenExpired($token)) {
+        if (!$this->authService->isAccessTokenValid($accessToken)) {
             return JsonResponseHelper::unauthorizedErrorAccessToken();
         }
 
