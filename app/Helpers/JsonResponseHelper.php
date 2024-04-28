@@ -49,6 +49,41 @@ class JsonResponseHelper
         ], HttpStatus::UNAUTHORIZED);
     }
 
+    public static function successDiscoverPosts($posts)
+    {
+        return response()->json([
+            "ok" => true,
+            "data" => [
+                "posts" => $posts,
+            ]
+        ], HttpStatus::SUCCESS);
+    }
+
+    public static function successRequestPhotoUrl($photoUrl)
+    {
+        return response()->json([
+            "ok" => true,
+            "data" => [
+                "photo_url" => $photoUrl,
+            ]
+        ], HttpStatus::SUCCESS);
+    }
+
+    public static function successSubmitPost($post, $userDetails)
+    {
+        return response()->json([
+            "ok" => true,
+            "data" => [
+                "id" => $post->id,
+                "photo_url" => $post->photo_url,
+                "caption" => $post->caption,
+                "author_id" => $userDetails->id,
+                "author_handle" => $userDetails->handle,
+                "created_at" => $post->created_at
+            ]
+        ], HttpStatus::SUCCESS);
+    }
+
     public static function unauthorizedErrorAccessToken()
     {
         return response()->json([

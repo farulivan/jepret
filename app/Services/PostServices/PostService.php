@@ -2,20 +2,19 @@
 
 namespace App\Services\PostServices;
 
-use App\Models\User;
-use App\Repositories\Posts\PostRepositoryInterface;
-use App\Repositories\Token\TokenRepositoryInterface;
 use Aws\S3\S3Client;
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Helpers\JsonResponseHelper;
+use App\Repositories\Posts\PostRepositoryInterface;
+use App\Services\AuthServices\AuthServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class PostService implements PostServiceInterface
 {
     public function __construct(
         protected PostRepositoryInterface $postRepository,
-        protected TokenRepositoryInterface $tokenRepository
-    )
-    {}
+        protected AuthServiceInterface $authService,
+    ) {
+    }
 
     public function getPosts(): Collection|array|null
     {
@@ -52,10 +51,16 @@ class PostService implements PostServiceInterface
 
     public function store(string $token, array $data)
     {
-        $user = $this->tokenRepository->findToken($token);
-        $data['author_id'] = $user->tokenable_id;
-        $data['created_at'] = time();
+        $user = $this->authService->getUserFromToken($token);
 
-        return $this->postRepository->create($data);
+        if (!$user) {
+            return JsonResponseHelper::unauthorizedErrorAccessToken();
+        }
+
+        $data['author_id'] = $user->id;
+        $data['created_at'] = time();
+        $post = $this->postRepository->create($data);
+
+        return $post;
     }
 }
