@@ -51,7 +51,7 @@ function LoginPage() {
                 <div id="loginFormLayout">
                     <article id="loginFormHolder">
                         <hgroup>
-                            <h1>Jepret Kuy</h1>
+                            <h1>Jepret API + Client</h1>
                             <h2>Mudah berbagi foto-fotomu!</h2>
                         </hgroup>
                         <form onSubmit={handleLogin}>
