@@ -139,6 +139,13 @@
         </article>
     </dialog>
     <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script src="{{ asset('assets/js/session.js') }}"></script>
+    <script src="{{ asset('assets/js/posts.js') }}"></script>
+    <script defer>
+        startRefreshingToken();
+
+        getPosts();
+    </script>
 </body>
 
 </html>
