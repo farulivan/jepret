@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import axiosClient from "../axios-client";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "./context/ContextProvider";
@@ -9,7 +8,7 @@ function MainPage() {
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState("");
     const [caption, setCaption] = useState("");
-    const [uploadProgress, setUploadProgress] = useState(0);
+    const [, setUploadProgress] = useState(0);
     const fileInputRef = useRef(null);
     const { logout } = useStateContext();
     const navigate = useNavigate();
@@ -35,7 +34,6 @@ function MainPage() {
 
     const handleImageSelection = (event) => {
         const file = event.target.files[0];
-        console.log(file);
         if (file) {
             setSelectedImage(file);
             uploadImage(file);
@@ -43,39 +41,66 @@ function MainPage() {
     };
 
     const uploadImage = async (file) => {
-        // Fetch upload URL from your backend
         try {
-            const response = await axiosClient.post("/photo-urls");
-            const uploadURL = response.data;
-            await uploadToS3(uploadURL, file);
+            // Fetch the presigned URL from your backend
+            const response = await axiosClient.post("/photo-urls"); // Adjust this as needed if it's a GET request
+            const uploadURL = response.data.data.photo_url; // Make sure you are accessing the URL correctly based on your API response
+            // Upload the file to the presigned URL
+            uploadToS3(
+                uploadURL,
+                file,
+                (progress) => {
+                    const percentage = Math.round(progress * 100);
+                    setUploadProgress(percentage); // Update state with upload progress
+                },
+                (response) => {
+                    alert("File uploaded successfully");
+                    console.log("Upload response:", response);
+                    // Here you might want to clear selections or handle next steps
+                },
+                (error) => {
+                    console.error("Upload error:", error);
+                    alert(error);
+                }
+            );
         } catch (error) {
             console.error("Error fetching upload URL", error);
             alert("Could not fetch upload URL.");
         }
     };
 
-    const uploadToS3 = async (uploadURL, file) => {
-        const options = {
-            onUploadProgress: (progressEvent) => {
-                const percentCompleted = Math.round(
-                    (progressEvent.loaded * 100) / progressEvent.total
-                );
-                setUploadProgress(percentCompleted);
-            },
-            headers: {
-                "Content-Type": file.type,
-                "x-amz-acl": "public-read",
-            },
+    function uploadToS3(uploadURL, file, onProgress, onSuccess, onError) {
+        const xhr = new XMLHttpRequest();
+
+        // Listen for the upload progress event
+        xhr.upload.onprogress = function (event) {
+            if (event.lengthComputable) {
+                const progress = event.loaded / event.total;
+                onProgress(progress); // Call the onProgress callback with the upload progress percentage
+            }
         };
-        try {
-            await axios.put(uploadURL, file, options);
-            alert("File uploaded successfully");
-            setSelectedImage(null); // Reset after upload
-        } catch (error) {
-            console.error("Upload failed", error);
-            alert("Upload failed, please try again.");
-        }
-    };
+
+        // Setup the onload event to handle when the request is complete
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                onSuccess(xhr.response); // Call onSuccess callback if upload is successful
+            } else {
+                onError(
+                    `Failed to upload file: ${xhr.status} ${xhr.statusText}`
+                ); // Call onError callback if upload fails
+            }
+        };
+
+        // Handle any errors that occur during the network request
+        xhr.onerror = function () {
+            onError("Failed to execute upload"); // Call onError callback on network error
+        };
+
+        // Configure the HTTP PUT request
+        xhr.open("PUT", uploadURL, true);
+        xhr.setRequestHeader("x-amz-acl", "public-read"); // Set necessary headers, such as permissions
+        xhr.send(file); // Send the file data
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -84,31 +109,35 @@ function MainPage() {
             return;
         }
 
-        // Assume '/photo-urls' endpoint is used to get a presigned URL for uploads
-        const uploadConfig = await axios.get("/photo-urls");
-        const { url } = uploadConfig.data;
+        try {
+            // Get the presigned URL for the upload
+            const uploadConfig = await axiosClient.post("/photo-urls");
+            const { url } = uploadConfig.data;
+            const uploadResponse = await uploadToS3(
+                url,
+                selectedImage,
+                setUploadProgress
+            );
 
-        // Upload the image to the presigned URL
-        const formData = new FormData();
-        formData.append("file", selectedImage);
+            // After successful upload, submit the post details
+            if (uploadResponse.status === 200) {
+                const submitResponse = await axiosClient.post("/posts", {
+                    photo_url: url.split("?")[0], // Assuming URL needs to be cleaned from parameters
+                    caption,
+                });
 
-        await axios.put(url, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-
-        // After successful upload, submit the post details
-        const submitResponse = await axios.post("/posts", {
-            photo_url: url.split("?")[0], // Assuming URL needs to be cleaned from parameters
-            caption,
-        });
-
-        if (submitResponse.status === 200) {
-            alert("Post created successfully!");
-            // Reset state and close modal logic here
-        } else {
-            alert("Failed to create post.");
+                if (submitResponse.status === 200) {
+                    alert("Post created successfully!");
+                    setSelectedImage(null);
+                    setImagePreviewUrl("");
+                    setCaption("");
+                } else {
+                    alert("Failed to create post.");
+                }
+            }
+        } catch (error) {
+            console.error("Error during form submission", error);
+            alert("Error during form submission.");
         }
     };
 

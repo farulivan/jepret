@@ -3,6 +3,8 @@ RED=\033[0;31m
 GREEN=\033[0;32m
 NC=\033[0m # No Color
 
+run: setup run-server dev
+
 setup:
 	@echo "${GREEN}Removing any containers...${NC}"
 	docker-compose down
@@ -25,20 +27,9 @@ setup:
 	@echo "${GREEN}Applying migrations and seeds...${NC}"
 	docker-compose run --rm artisan migrate:fresh --seed
 
-	@echo "${GREEN}Setup complete, stopping services...${NC}"
-	docker-compose down
-
-run:
-	@echo "${GREEN}Removing any containers...${NC}"
-	docker-compose down
-
-	@echo "${GREEN}Running all services...${NC}"
-	docker-compose up -d server --remove-orphans
-
-	@echo "${GREEN}Waiting for MySQL to be ready...${NC}"
-	sleep 10 # Adjust based on your system's speed
-
-	docker-compose run -it --rm artisan serve
+run-server:
+	@echo "${GREEN}Run the server...${NC}"
+	docker-compose run --rm -d artisan serve
 
 migrate:
 	@echo "${GREEN}Applying migrations...${NC}"

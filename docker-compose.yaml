@@ -1,16 +1,43 @@
 version: "3.8"
 
 services:
+  localstack:
+    image: localstack/localstack:1.2.0
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3
+      - DEFAULT_REGION=eu-west-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - USE_SINGLE_REGION=true
+      - BUCKET_NAME=example-bucket
+    volumes:
+      - ./init-localstack.sh:/docker-entrypoint-initaws.d/init-localstack.sh
+      - localstack-data:/tmp/localstack
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4566/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   server:
     image: 'nginx:stable-alpine'
     ports:
       - '8000:80'
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=eu-west-1
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_BUCKET_NAME=example-bucket
     volumes:
       - .:/var/www/html
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - php
       - mysql
+      - localstack
 
   php:
     build:
@@ -63,3 +90,4 @@ services:
 
 volumes:
   mysql-data:
+  localstack-data:
