@@ -26,7 +26,7 @@
             </li>
             <li>
                 <div class="action-button" id="btnLogout">
-                    <a href="login.html">
+                    <a href="/">
                         <img src="assets/icons/log-out.svg" alt="" srcset="">
                     </a>
                 </div>
