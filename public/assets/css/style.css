@@ -1,0 +1,108 @@
+.is-fullheight {
+    height: 100vh;
+    padding: 0;
+}
+
+#loginFormHolder {
+    padding: var(--block-spacing-horizontal);
+    margin: 0 calc(var(--block-spacing-vertical));
+    opacity: 0.9;
+}
+
+#loginFormHolder>hgroup>:last-child {
+    font-size: 0.9rem;
+}
+
+#loginFormLayout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+    background-color: var(--card-background-color);
+}
+
+body>nav {
+    background-color: var(--card-background-color);
+    box-shadow: var(--card-box-shadow);
+    position: fixed;
+    top: 0;
+    z-index: 1;
+}
+
+#postListContainer {
+    margin-top: calc(var(--block-spacing-vertical) / 2 + 1rem);
+    padding-right: 40px;
+    padding-left: 40px;
+}
+
+#postListContainer>div.row {
+    justify-content: center;
+}
+
+article.post-container>.caption-container {
+    padding: 1.5rem;
+}
+
+article.post-container>figure {
+    margin-bottom: 0;
+
+}
+
+article.post-container>figure>img {
+    height: 250px;
+    width: 100%;
+    object-fit: cover;
+}
+
+article.post-container>.caption-container {
+    height: 180px;
+    position: relative;
+}
+
+article.post-container>.caption-container>p.caption {
+    font-size: 16px;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+article.post-container>.caption-container>p.meta {
+    font-size: 12px;
+    position: absolute;
+    text-align: right;
+    bottom: 2rem;
+    right: 1.5rem;
+    margin-bottom: 0;
+}
+
+article.post-container {
+    padding: 0;
+    margin: calc(var(--block-spacing-vertical) / 2) 0;
+}
+
+.action-button img {
+    width: 20px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+#imageFileInput {
+    display: none;
+}
+
+dialog#modalCreatePost > article > figure > img {
+    max-height: 400px;
+    width: 100vw;
+    object-fit: contain;
+}
+
+dialog#modalCreatePost > article > header {
+    margin-bottom: 30px;
+}
+
+dialog#modalCreatePost > article > header > p {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
