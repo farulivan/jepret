@@ -12,14 +12,10 @@ services:
       - AWS_SECRET_ACCESS_KEY=test
       - USE_SINGLE_REGION=true
       - BUCKET_NAME=example-bucket
+      - DISABLE_CORS_CHECKS=1
     volumes:
       - ./init-localstack.sh:/docker-entrypoint-initaws.d/init-localstack.sh
       - localstack-data:/tmp/localstack
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:4566/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   server:
     image: 'nginx:stable-alpine'
@@ -29,7 +25,7 @@ services:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_REGION=eu-west-1
-      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_ENDPOINT_URL=http://localhost:4566
       - AWS_BUCKET_NAME=example-bucket
     volumes:
       - .:/var/www/html
