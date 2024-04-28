@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BladeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'login');
-Route::view('/main', 'main');
+Route::get('/', [BladeController::class, 'showLoginPage']);
+Route::get('/main', [BladeController::class, 'showMainPage']);
