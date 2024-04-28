@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PostController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,6 @@ Route::get("ping", function () {
 
 Route::post("session", [AuthController::class, 'login']);
 Route::put("session", [AuthController::class, 'refreshAccessToken']);
-Route::get("posts", fn () => '');
-Route::post("photo-url", fn () => '');
-Route::post("posts", fn () => '');
+Route::get("/posts", [PostController::class, 'discoverPost']);
+Route::post("/photo-url", [PostController::class, 'requestPhotoUrl']);
+Route::post("/posts", [PostController::class, 'storePost'])->middleware(['auth.token']);

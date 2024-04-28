@@ -6,6 +6,7 @@ use App\Helpers\JsonResponseHelper;
 use Closure;
 use Illuminate\Http\Request;
 use App\Repositories\Token\TokenRepositoryInterface;
+use Illuminate\Support\Str;
 
 class ValidateAccessToken
 {
@@ -26,9 +27,13 @@ class ValidateAccessToken
     public function handle(Request $request, Closure $next)
     {
         $token = $request->bearerToken();
+        $tokenModel = $this->tokenRepository->findToken($token);
 
-        // TODO: Need to make sure it's Access Token not Refresh Token
-        if (!$token || !$this->tokenRepository->findToken($token) || $this->tokenRepository->isTokenExpired($token)) {
+        if (Str::lower($tokenModel->name ?? '') != \App\Enums\AuthEnum::AUTH_TOKEN_NAME) {
+            return JsonResponseHelper::unauthorizedErrorAccessToken();
+        }
+
+        if (!$tokenModel || $this->tokenRepository->isTokenExpired($token)) {
             return JsonResponseHelper::unauthorizedErrorAccessToken();
         }
 
