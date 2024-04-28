@@ -57,7 +57,7 @@ class AuthController extends Controller
             return JsonResponseHelper::unauthorizedErrorRefreshToken();
         }
 
-        $user = $this->authService->getUserFromRefreshToken($refreshToken);
+        $user = $this->authService->getUserFromToken($refreshToken);
         if (!$user) {
             return JsonResponseHelper::unauthorizedErrorRefreshToken();
         }

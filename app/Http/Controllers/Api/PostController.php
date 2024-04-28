@@ -2,84 +2,58 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Services\PostServices\PostServiceInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
+use App\Helpers\JsonResponseHelper;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\SubmitPostRequest;
+use App\Services\PostServices\PostServiceInterface;
+use App\Services\UserServices\UserServiceInterface;
 
 class PostController extends Controller
 {
     public function __construct(
         protected PostServiceInterface $postService,
-    )
-    {
+        protected UserServiceInterface $userService,
+    ) {
     }
 
-    public function discoverPost(Request $request)
+    /**
+     * Discover posts available.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function discoverPosts(Request $request): JsonResponse
     {
-        try {
-            $posts = $this->postService->getPosts();
-        } catch (\Exception $exception) {
-            return response()->json([
-                'ok' => false,
-                'err' => 'ERR_BAD_REQUEST',
-                'msg' => $exception->getMessage(),
-            ], 400);
-        }
-
-        return response()->json([
-            'ok' => true,
-            'data' => [
-                'posts' => $posts,
-            ],
-        ]);
+        $posts = $this->postService->getPosts();
+        return JsonResponseHelper::successDiscoverPosts($posts);
     }
 
-    public function requestPhotoUrl(Request $request)
+    /**
+     * Request a URL for uploading a photo.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function requestPhotoUrl(Request $request): JsonResponse
     {
-        try {
-            $data = $this->postService->generatePhotoUrl();
-        } catch (\Exception $exception) {
-            return response()->json([
-                'ok' => false,
-                'err' => 'ERR_BAD_REQUEST',
-                'msg' => $exception->getMessage(),
-            ], 400);
-        }
-
-        return response()->json([
-            'ok' => true,
-            'data' => ['photo_url' => $data],
-        ]);
+        $photoUrl = $this->postService->generatePhotoUrl();
+        return JsonResponseHelper::successRequestPhotoUrl($photoUrl);
     }
 
-    public function storePost(Request $request)
+    /**
+     * Submit a new post.
+     *
+     * @param SubmitPostRequest $request
+     * @return JsonResponse
+     */
+    public function submitPost(SubmitPostRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'photo_url' => ['required', 'string', 'max:60000'],
-            'caption' => ['required', 'string', 'max:60000'],
-        ]);
-
-        try {
-            if ($validator->fails()) {
-                throw new \Exception($validator->errors()->first());
-            }
-
-            $data = $this->postService->store(
-                $request->bearerToken(),
-                $validator->valid()
-            );
-        } catch (\Exception $exception) {
-            return response()->json([
-                'ok' => false,
-                'err' => 'ERR_BAD_REQUEST',
-                'msg' => $exception->getMessage(),
-            ], 400);
-        }
-
-        return response()->json([
-            'ok' => true,
-            'data' => $data,
-        ]);
+        $validated = $request->validated();
+        $accessToken = $request->bearerToken();
+        $post = $this->postService->store($accessToken, $validated);
+        $userDetails = $this->userService->getById($post['author_id']);
+        return JsonResponseHelper::successSubmitPost($post, $userDetails);
     }
 }

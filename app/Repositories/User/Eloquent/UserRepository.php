@@ -25,4 +25,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         return $this->model->where('email', $email)->first();
     }
+
+    /**
+     * Retrieve a user by their ID.
+     *
+     * @param int $id The ID of the user to retrieve.
+     * @return User|null The user with the specified ID, or null if not found.
+     */
+    public function getById($id): ?User
+    {
+        return $this->model->find($id);
+    }
 }

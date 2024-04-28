@@ -28,4 +28,15 @@ class UserService implements UserServiceInterface
     {
         return $this->userRepository->getByEmail($email);
     }
+
+    /**
+     * Retrieve a user by their ID.
+     *
+     * @param int $id The ID of the user to retrieve.
+     * @return object|null The user with the specified ID, or null if not found.
+     */
+    public function getById($id): ?object
+    {
+        return $this->userRepository->getById($id);
+    }
 }

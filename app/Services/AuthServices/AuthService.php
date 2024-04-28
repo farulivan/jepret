@@ -59,19 +59,35 @@ class AuthService implements AuthServiceInterface
      */
     public function isRefreshTokenValid(?string $refreshToken): bool
     {
-        if ($refreshToken === null) {
+        return $this->isTokenValid($refreshToken, AuthEnum::REFRESH_TOKEN_ABILITY);
+    }
+
+    /**
+     * Validates whether an access token is valid.
+     *
+     * @param string|null $accessToken The access token to validate.
+     * @return bool True if the access token is valid, otherwise false.
+     */
+    public function isAccessTokenValid(?string $accessToken): bool
+    {
+        return $this->isTokenValid($accessToken, AuthEnum::AUTH_TOKEN_ABILITY);
+    }
+
+    private function isTokenValid(?string $token, string $ability): bool
+    {
+        if ($token === null) {
             return false;
         }
 
-        if (!$this->tokenRepository->findToken($refreshToken)) {
+        if (!$this->tokenRepository->findToken($token)) {
             return false;
         }
 
-        if ($this->tokenRepository->isTokenExpired($refreshToken)) {
+        if ($this->tokenRepository->isTokenExpired($token)) {
             return false;
         }
 
-        if (!$this->tokenRepository->tokenHasAbility($refreshToken, AuthEnum::REFRESH_TOKEN_ABILITY)) {
+        if (!$this->tokenRepository->tokenHasAbility($token, $ability)) {
             return false;
         }
 
@@ -79,12 +95,12 @@ class AuthService implements AuthServiceInterface
     }
 
     /**
-     * Retrieves the user associated with a given refresh token.
+     * Retrieves the user associated with a given token.
      *
-     * @param string $refreshToken The refresh token whose associated user is to be retrieved.
+     * @param string $token The token whose associated user is to be retrieved.
      * @return object|null The user object if found, otherwise null.
      */
-    public function getUserFromRefreshToken(string $refreshToken): ?object
+    public function getUserFromToken(string $refreshToken): ?object
     {
         return $this->tokenRepository->getUserFromToken($refreshToken);
     }
@@ -117,27 +133,5 @@ class AuthService implements AuthServiceInterface
         $token = $user->createToken(AuthEnum::REFRESH_TOKEN_NAME, [AuthEnum::REFRESH_TOKEN_ABILITY])
             ->plainTextToken;
         return $token;
-    }
-
-    /**
-     * Check if the user has a refresh token.
-     *
-     * @param  object  $user The user data.
-     * @return bool
-     */
-    public function isAuthHasRefreshToken(object $user): bool
-    {
-        return $user->tokenCan(AuthEnum::REFRESH_TOKEN_ABILITY);
-    }
-
-    /**
-     * Check if the user has an access token.
-     *
-     * @param  object  $user The user data.
-     * @return bool
-     */
-    public function isAuthHasAccessToken(object $user): bool
-    {
-        return $user->tokenCan(AuthEnum::AUTH_TOKEN_ABILITY);
     }
 }
