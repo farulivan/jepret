@@ -52,8 +52,8 @@ services:
     ports:
       - '3306:3306'
     environment:
-      MYSQL_DATABASE: forever_note
-      MYSQL_USER: forever_note
+      MYSQL_DATABASE: jepret
+      MYSQL_USER: jepret
       MYSQL_PASSWORD: secret
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:

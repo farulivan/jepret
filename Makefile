@@ -6,6 +6,9 @@ NC=\033[0m # No Color
 run: setup run-server dev
 
 setup:
+	cp .env.docker.example .env
+	cp ./client/.env.example ./client/.env
+
 	@echo "${GREEN}Removing any containers...${NC}"
 	docker-compose down
 
