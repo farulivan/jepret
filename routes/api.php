@@ -19,8 +19,8 @@ Route::get("ping", function () {
     return response()->json(["data" => "pong"]);
 });
 
-Route::post("session", [AuthController::class, 'login']);
-Route::put("session", [AuthController::class, 'refreshAccessToken']);
-Route::get("/posts", [PostController::class, 'discoverPosts']);
-Route::post("/photo-urls", [PostController::class, 'requestPhotoUrl'])->middleware(['auth.token']);
-Route::post("/posts", [PostController::class, 'submitPost'])->middleware(['auth.token']);
+Route::post("session", [AuthController::class, 'login'])->name('session.login');
+Route::put("session", [AuthController::class, 'refreshAccessToken'])->name('session.refresh-access-token');
+Route::get("/posts", [PostController::class, 'discoverPosts'])->name('posts.discover-posts');
+Route::post("/photo-urls", [PostController::class, 'requestPhotoUrl'])->middleware(['auth.token'])->name('posts.request-photo-url');
+Route::post("/posts", [PostController::class, 'submitPost'])->middleware(['auth.token'])->name('posts.submit-post');
