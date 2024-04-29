@@ -44,7 +44,7 @@ install:
 
 dev:
 	@echo "${GREEN}Running client in development mode...${NC}"
-	docker-compose run --rm -p 3000:3000 npm run dev
+	docker-compose run --rm -p 8080:8080 npm run dev
 
 build:
 	@echo "${GREEN}Building the client...${NC}"
@@ -52,7 +52,7 @@ build:
 
 preview:
 	@echo "${GREEN}Running client based on built file...${NC}"
-	docker-compose run --rm -p 3000:3000 npm run preview
+	docker-compose run --rm -p 8080:8080 npm run preview
 
 down:
 	@echo "${GREEN}Removing any containers...${NC}"

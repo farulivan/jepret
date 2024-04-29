@@ -20,7 +20,7 @@ services:
   server:
     image: 'nginx:stable-alpine'
     ports:
-      - '8000:80'
+      - '8070:80'
     environment:
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
@@ -79,7 +79,7 @@ services:
       dockerfile: ./dockerfiles/npm.dockerfile
     working_dir: /var/www/html/client
     ports:
-      - '3000:3000'
+      - '8080:8080'
     entrypoint: [ "npm" ]
     volumes:
       - ./client:/var/www/html/client
