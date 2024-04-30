@@ -17,17 +17,35 @@ class PostService implements PostServiceInterface
     ) {
     }
 
+    /**
+     * Retrieves a collection of posts.
+     *
+     * @return Collection|array|null Returns a collection of posts, an array, or null if no posts are available.
+     */
     public function getPosts(): Collection|array|null
     {
         return $this->postRepository->get();
     }
 
-    public function generatePhotoUrl(): string
+    /**
+     * Generates a pre-signed URL for photo uploads.
+     *
+     * @param int $expirationMinutes The number of minutes the URL will remain valid.
+     * @return string Returns the generated pre-signed URL.
+     */
+    public function generatePhotoUrl(int $expirationMinutes = 15): string
     {
         $key = time() . '_' . bin2hex(random_bytes(16)) . '.jpg';
-        return $this->storageRepository->createPresignedUrl($key);
+        return $this->storageRepository->createPresignedUrl($key, $expirationMinutes);
     }
 
+    /**
+     * Stores a new post in the database.
+     *
+     * @param string $token The authentication token used to identify and authenticate the user.
+     * @param array $data Data to be stored as part of the post.
+     * @return mixed Returns the newly created post object or an error response if unauthorized.
+     */
     public function store(string $token, array $data)
     {
         $user = $this->authService->getUserFromToken($token);

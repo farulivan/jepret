@@ -23,9 +23,18 @@ class StorageRepository implements StorageRepositoryInterface
         ]);
     }
 
-    public function createPresignedUrl(string $fileKey): string
+    /**
+     * Creates a pre-signed URL for file upload to AWS S3.
+     *
+     *
+     * @param string $fileKey The key under which the file will be stored in the bucket.
+     * @param int $minutes The duration in minutes for which the generated URL will remain valid.
+     * @return string The generated pre-signed URL.
+     */
+    public function createPresignedUrl(string $fileKey, int $minutes = 15): string
     {
         $bucket = config('filesystems.disks.s3.bucket');
+        $expiration = '+' . $minutes . ' minutes';
 
         $cmd = $this->s3Client->getCommand('PutObject', [
             'Bucket' => $bucket,
@@ -33,7 +42,7 @@ class StorageRepository implements StorageRepositoryInterface
             'ACL' => 'public-read',
         ]);
 
-        $presignedRequest = $this->s3Client->createPresignedRequest($cmd, '+15 minutes');
+        $presignedRequest = $this->s3Client->createPresignedRequest($cmd, $expiration);
 
         return (string)$presignedRequest->getUri();
     }
