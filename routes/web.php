@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BladeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +15,10 @@ use App\Http\Controllers\BladeController;
 |
 */
 
-Route::get('/', [BladeController::class, 'showLoginPage']);
-Route::get('/main', [BladeController::class, 'showMainPage']);
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login-show');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+Route::middleware('auth')->group(function() {
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/', [MainController::class, 'showMain'])->name('main-show');
+});

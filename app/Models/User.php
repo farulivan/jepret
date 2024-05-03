@@ -50,6 +50,10 @@ class User extends Authenticatable
         'email', 'handle', 'password'
     ];
 
+    protected $casts = [
+        'password' => 'hashed'
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *

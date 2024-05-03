@@ -20,27 +20,19 @@
                         <h1>Jepret</h1>
                         <h2>Mudah berbagi foto-fotomu!</h2>
                     </hgroup>
-                    <form onsubmit="btnLogin(); return false;">
-                        <input type="email" placeholder="Email">
-                        <input type="password" placeholder="Password">
+                    <form method="post" action="{{ route('login-show')  }}">
+                        @csrf
+                        <input type="email" placeholder="Email" name="email" required>
+                        <input type="password" placeholder="Password" name="password" required>
                         <button class="contrast" type="submit">Login</button>
                     </form>
-                    </form>
+                    @if ($errors->has('email'))
+                        <p class="alert-error">{{ $errors->first('email') }}</p>
+                    @endif
                 </article>
             </div>
         </div>
     </main>
-    <script src="{{ asset('assets/js/session.js') }}"></script>
-    <script defer>
-        function btnLogin() {
-            // prevent default form submission
-            event.preventDefault();
-            var email = document.querySelector('#loginFormHolder input[type="email"]').value;
-            var password = document.querySelector('#loginFormHolder input[type="password"]').value;
-            console.log([email, password])
-            login(email, password);
-        }
-    </script>
 </body>
 
 </html>

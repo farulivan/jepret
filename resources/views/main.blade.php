@@ -25,7 +25,7 @@
             </li>
             <li>
                 <div class="action-button" id="btnLogout">
-                    <a href="/">
+                    <a href="{{ route('logout') }}">
                         <img src="assets/icons/log-out.svg" alt="" srcset="">
                     </a>
                 </div>
