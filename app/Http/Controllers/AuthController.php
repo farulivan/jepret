@@ -26,7 +26,7 @@ class AuthController extends Controller
             return redirect()->intended('main-show');
         }
 
-        return back()->withErrors([
+        return back()->withInput()->withErrors([
             'email' => 'Invalid credentials'
         ]);
     }

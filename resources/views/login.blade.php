@@ -22,8 +22,8 @@
                     </hgroup>
                     <form method="post" action="{{ route('login-show')  }}">
                         @csrf
-                        <input type="email" placeholder="Email" name="email" required>
-                        <input type="password" placeholder="Password" name="password" required>
+                        <input type="email" placeholder="Email" name="email" value="{{ old('email') }}" required>
+                        <input type="password" placeholder="Password" name="password" value="{{ old('password') }}" required>
                         <button class="contrast" type="submit">Login</button>
                     </form>
                     @if ($errors->has('email'))
