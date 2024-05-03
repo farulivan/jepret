@@ -43,7 +43,7 @@ services:
             dockerfile: ./deploy/local/dockerfiles/server.Dockerfile
             context: ../../../
         ports:
-            - '8000:8000'
+            - '8070:8070'
         depends_on:
             db-init:
                 condition: service_completed_successfully
