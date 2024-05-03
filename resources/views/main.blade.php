@@ -34,91 +34,21 @@
     </nav>
     <main class="container" id="postListContainer">
         <div class="row">
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
+            @forelse($posts as $post)
+                <div class="col-md-4">
+                    <article class="post-container">
+                        <figure>
+                            <img src="{{ $post->photo_url  }}" alt="" srcset="">
+                        </figure>
+                        <div class="caption-container">
+                            <p class="caption">{{ $post->caption }}</p>
+                            <p class="meta">{{ '@' . $post->author->handle }} - {{ \Carbon\Carbon::createFromTimestamp($post->created_at)->format('D, d F Y') }}</p>
+                        </div>
+                    </article>
+                </div>
+            @empty
+                <h5>No posts found</h5>
+            @endforelse
         </div>
     </main>
     <dialog id="modalCreatePost">

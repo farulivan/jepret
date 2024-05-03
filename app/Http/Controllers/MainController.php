@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
+
 class MainController extends Controller
 {
     public function showMain()
     {
-        return view('main');
+        $posts = Post::latest()->get();
+        return view('main', ['posts' => $posts]);
     }
 }
