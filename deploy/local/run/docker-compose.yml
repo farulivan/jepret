@@ -13,6 +13,8 @@ services:
             MYSQL_ROOT_PASSWORD: secret
             MYSQL_DATABASE: jepret
 
+    # we always start using fresh database, this is to minimize
+    # issues arisen from corrupted data in our local computer
     db-init:
         build:
             dockerfile: ./deploy/local/dockerfiles/server.Dockerfile
@@ -21,6 +23,20 @@ services:
         depends_on:
             mysql:
                 condition: service_healthy
+
+    localstack:
+        image: localstack/localstack:1.2.0
+        healthcheck:
+            test: curl -s localhost:4566/health 2>&1 | grep -c initialized > /dev/null
+        environment:
+            - USE_SINGLE_REGION=true
+            - DEFAULT_REGION=eu-west-1
+            - DISABLE_CORS_CHECKS=1
+            - BUCKET_NAME=example-bucket
+        volumes:
+            - ../scripts/init-localstack.sh:/docker-entrypoint-initaws.d/init-localstack.sh
+        ports:
+            - '4566:4566'
 
     server:
         build:
@@ -31,5 +47,7 @@ services:
         depends_on:
             db-init:
                 condition: service_completed_successfully
+            localstack:
+                condition: service_healthy
         volumes:
             - ../../../:/jepret/

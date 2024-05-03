@@ -22,4 +22,5 @@ RUN composer install && npm install
 # to be able to override it for database initialization purpose
 # notice that we set the host to 0.0.0.0 this is so the laravel
 # app can listen to all networks (by default it set to 127.0.0.1)
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# we use port 8070 since it is the port stated in the challenge
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8070"]
