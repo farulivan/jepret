@@ -1,0 +1,33 @@
+# set the script version to 2.4 this is, so we can use feature
+# such as container health check & depends_on which is useful
+# for controlling the order of setting up the containers.
+version: '2.4'
+services:
+    mysql:
+        image: bitnami/mysql:5.7
+        ports:
+            - '3307:3306'
+        healthcheck:
+            test: mysqladmin ping -h localhost
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: jepret
+
+    db-init:
+        build:
+            dockerfile: ./deploy/local/dockerfiles/server.Dockerfile
+            context: ../../../
+        command: ["php", "artisan", "migrate:refresh", "--seed"]
+        depends_on:
+            mysql:
+                condition: service_healthy
+
+    server:
+        build:
+            dockerfile: ./deploy/local/dockerfiles/server.Dockerfile
+            context: ../../../
+        ports:
+            - '8000:8000'
+        depends_on:
+            db-init:
+                condition: service_completed_successfully
