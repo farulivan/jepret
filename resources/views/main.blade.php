@@ -19,7 +19,6 @@
         <ul>
             <li>
                 <div class="action-button">
-                    <input type="file" id="imageFileInput" accept="image/*" style="display: none;">
                     <img src="assets/icons/camera.svg" alt="Upload Image" id="btnSelectImage" style="cursor: pointer;">
                 </div>
             </li>
@@ -64,28 +63,12 @@
             <form id="formCreatePost" action="#" autocomplete="off">
                 <input type="text" name="imageCaption" id="imageCaption" placeholder="Insert caption here..."
                     required>
+                <input type="file" id="imageFileInput" accept="image/jpeg" style="display: none;">
                 <button type="submit" class="contrast">Publish</button>
             </form>
         </article>
     </dialog>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    <script src="{{ asset('assets/js/session.js') }}"></script>
-    <script src="{{ asset('assets/js/posts.js') }}"></script>
-    <script defer>
-        document.getElementById('btnSelectImage').addEventListener('click', function() {
-            document.getElementById('imageFileInput').click();
-        });
-
-        document.getElementById('imageFileInput').addEventListener('change', function() {
-            if (this.files.length > 0) {
-                // Assuming the uploadPhoto function in posts.js handles the upload and opens the modal
-                uploadPhoto(this.files[0]); // Pass the file directly to the upload function
-            }
-        });
-
-        startRefreshingToken();
-        getPosts();
-    </script>
 </body>
 
 </html>
