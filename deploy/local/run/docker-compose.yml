@@ -49,6 +49,13 @@ services:
                 condition: service_completed_successfully
             localstack:
                 condition: service_healthy
+        environment:
+            - AWS_ACCESS_KEY_ID=dummy_since_we_use_localstack
+            - AWS_SECRET_ACCESS_KEY=dummy_since_we_use_localstack
+            - AWS_DEFAULT_REGION=eu-west-1
+            - AWS_BUCKET=example-bucket
+            - AWS_ENDPOINT=http://localstack:4566 # necessary since we want to connect to localstack instead actual AWS service
+            - AWS_USE_PATH_STYLE_ENDPOINT=true # this is also necessary to make upload to localstack works
         volumes:
             - ../../../:/jepret/
 

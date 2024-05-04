@@ -43,9 +43,6 @@ document.addEventListener('DOMContentLoaded', function(){
     const imageFileInput = document.getElementById("imageFileInput");
     imageFileInput.onchange = openModalCreatePost;
 
-    const formCreatePost = document.getElementById("formCreatePost");
-    formCreatePost.onsubmit = closeModalCreatePost;
-
     const btnCancelCreatePost = document.getElementById("btnCancelCreatePost");
     btnCancelCreatePost.onclick = closeModalCreatePost;
 

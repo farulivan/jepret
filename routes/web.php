@@ -21,4 +21,5 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware('auth')->group(function() {
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/', [MainController::class, 'showMain'])->name('main-show');
+    Route::post('/upload', [MainController::class, 'uploadPost'])->name('upload-post');
 });

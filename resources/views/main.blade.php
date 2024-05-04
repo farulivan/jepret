@@ -32,6 +32,9 @@
         </ul>
     </nav>
     <main class="container" id="postListContainer">
+        @if ($errors->has('message'))
+            <p class="alert-error">{{ $errors->first('message') }}</p>
+        @endif
         <div class="row">
             @forelse($posts as $post)
                 <div class="col-md-4">
@@ -60,10 +63,11 @@
                 <img src="" alt="" id="selectedImage">
             </figure>
             <div id="uploadProgress"></div>
-            <form id="formCreatePost" action="#" autocomplete="off">
-                <input type="text" name="imageCaption" id="imageCaption" placeholder="Insert caption here..."
+            <form id="formCreatePost" method="post" action="{{ route('upload-post') }}" autocomplete="off" enctype="multipart/form-data">
+                @csrf
+                <input type="text" name="caption" id="imageCaption" placeholder="Insert caption here..."
                     required>
-                <input type="file" id="imageFileInput" accept="image/jpeg" style="display: none;">
+                <input type="file" id="imageFileInput" accept="image/jpeg" name="image" style="display: none;">
                 <button type="submit" class="contrast">Publish</button>
             </form>
         </article>
