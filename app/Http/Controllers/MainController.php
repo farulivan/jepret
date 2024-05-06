@@ -5,16 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Aws\S3\S3Client;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class MainController extends Controller
 {
-    protected S3Client $s3;
-
-    public function __construct(S3Client $s3) {
-        $this->s3 = $s3;
-    }
-
     public function showMain()
     {
         $posts = Post::latest()->get();
@@ -35,21 +30,14 @@ class MainController extends Controller
         // when something not right occurred and this is what we want.
         $file = $request->file('image');
         $fileName = now()->timestamp . '_' . $file->getClientOriginalName();
-        $filePath = $file->getPathname();
-
-        $result = $this->s3->putObject([
-            'Bucket' => config('filesystems.disks.s3.bucket'),
-            'Key'    => "uploads/{$fileName}",
-            'SourceFile' => $filePath,
-            'ACL'    => 'public-read'
-        ]);
-
+        $filePath = $file->storePubliclyAs('uploads', $fileName, 's3');
+        dd($filePath);
         // get url & adjust it to localhost because the image will
         // be displayed on browser
         $photoUrl = Str::replace(
             'localstack',
             'localhost',
-            $result->get('ObjectURL'),
+            Storage::disk('s3')->url($filePath),
         );
 
         // create new post
