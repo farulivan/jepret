@@ -17,21 +17,20 @@ class MainController extends Controller
     }
 
     public function uploadPost(Request $request) {
+        // validate incoming request
         $request->validate([
             'image' => 'required|file|mimes:jpeg,jpg|max:1024', // max 1MB
             'caption' => 'required'
         ]);
 
-        // upload image to s3, here we are using s3 client from AWS SDK PHP
-        // instead storage library provided by Laravel, the reason is that
-        // the Laravel storage library doesn't throw any exception when error
-        // is happening during upload process to S3, this makes debugging
-        // quite difficult, but s3 client from AWS SDK PHP will throw exception
-        // when something not right occurred and this is what we want.
+        // store the file to s3 using s3 storage library, notice that in the
+        // `config/filesystem.php` we already set it to throw exception when
+        // any errors occur during uploading to S3 bucket just like suggested
+        // by @fatkulnurk
         $file = $request->file('image');
         $fileName = now()->timestamp . '_' . $file->getClientOriginalName();
         $filePath = $file->storePubliclyAs('uploads', $fileName, 's3');
-        dd($filePath);
+
         // get url & adjust it to localhost because the image will
         // be displayed on browser
         $photoUrl = Str::replace(
