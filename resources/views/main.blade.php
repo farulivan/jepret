@@ -32,8 +32,8 @@
         </ul>
     </nav>
     <main class="container" id="postListContainer">
-        @if ($errors->has('message'))
-            <p class="alert-error">{{ $errors->first('message') }}</p>
+        @if ($errors->any())
+            <p class="alert-error">{{ $errors->first() }}</p>
         @endif
         <div class="row">
             @forelse($posts as $post)
