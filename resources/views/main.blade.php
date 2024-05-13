@@ -19,13 +19,12 @@
         <ul>
             <li>
                 <div class="action-button">
-                    <input type="file" id="imageFileInput" accept="image/*" style="display: none;">
                     <img src="assets/icons/camera.svg" alt="Upload Image" id="btnSelectImage" style="cursor: pointer;">
                 </div>
             </li>
             <li>
                 <div class="action-button" id="btnLogout">
-                    <a href="/">
+                    <a href="{{ route('logout') }}">
                         <img src="assets/icons/log-out.svg" alt="" srcset="">
                     </a>
                 </div>
@@ -33,92 +32,25 @@
         </ul>
     </nav>
     <main class="container" id="postListContainer">
+        @if ($errors->any())
+            <p class="alert-error">{{ $errors->first() }}</p>
+        @endif
         <div class="row">
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
-            <div class="col-md-4">
-                <article class="post-container">
-                    <figure>
-                        <img src="assets/images/mountain.jpeg" alt="" srcset="">
-                    </figure>
-                    <div class="caption-container">
-                        <p class="caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod
-                            facilisis nunc id mattis. Curabitur id euismod arcu. Phasellus ac nunc metus. Vivamus at
-                            auctor eros, vel sagittis orci. Maecenas convallis, purus ac malesuada lacinia, tellus leo
-                            luctus sem, vehicula pretium ex leo in quam. Duis accumsan vulputate dui id euismod. Morbi
-                            vel diam nisi. Morbi nec leo sit amet arcu lacinia faucibus. Ut et condimentum lectus. Nunc
-                            dictum rhoncus lectus, in commodo nunc finibus ac. Cras justo enim, interdum et arcu nec,
-                            tempor pharetra lectus.</p>
-                        <p class="meta">@riandyrn - Sun, 23 April 2023</p>
-                    </div>
-                </article>
-            </div>
+            @forelse($posts as $post)
+                <div class="col-md-4">
+                    <article class="post-container">
+                        <figure>
+                            <img src="{{ $post->photo_url  }}" alt="" srcset="">
+                        </figure>
+                        <div class="caption-container">
+                            <p class="caption">{{ $post->caption }}</p>
+                            <p class="meta">{{ '@' . $post->author->handle }} - {{ \Carbon\Carbon::createFromTimestamp($post->created_at)->format('D, d F Y') }}</p>
+                        </div>
+                    </article>
+                </div>
+            @empty
+                <h5>No posts found</h5>
+            @endforelse
         </div>
     </main>
     <dialog id="modalCreatePost">
@@ -131,31 +63,16 @@
                 <img src="" alt="" id="selectedImage">
             </figure>
             <div id="uploadProgress"></div>
-            <form id="formCreatePost" action="#" autocomplete="off">
-                <input type="text" name="imageCaption" id="imageCaption" placeholder="Insert caption here..."
+            <form id="formCreatePost" method="post" action="{{ route('upload-post') }}" autocomplete="off" enctype="multipart/form-data">
+                @csrf
+                <input type="text" name="caption" id="imageCaption" placeholder="Insert caption here..."
                     required>
+                <input type="file" id="imageFileInput" accept="image/jpeg" name="image" style="display: none;">
                 <button type="submit" class="contrast">Publish</button>
             </form>
         </article>
     </dialog>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    <script src="{{ asset('assets/js/session.js') }}"></script>
-    <script src="{{ asset('assets/js/posts.js') }}"></script>
-    <script defer>
-        document.getElementById('btnSelectImage').addEventListener('click', function() {
-            document.getElementById('imageFileInput').click();
-        });
-
-        document.getElementById('imageFileInput').addEventListener('change', function() {
-            if (this.files.length > 0) {
-                // Assuming the uploadPhoto function in posts.js handles the upload and opens the modal
-                uploadPhoto(this.files[0]); // Pass the file directly to the upload function
-            }
-        });
-
-        startRefreshingToken();
-        getPosts();
-    </script>
 </body>
 
 </html>
