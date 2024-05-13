@@ -1,0 +1,68 @@
+# set the script version to 2.4 this is, so we can use feature
+# such as container health check & depends_on which is useful
+# for controlling the order of setting up the containers.
+version: '2.4'
+services:
+    mysql:
+        image: bitnami/mysql:5.7
+        ports:
+            - '3307:3306'
+        healthcheck:
+            test: mysqladmin ping -h localhost
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: jepret
+
+    # we always start using fresh database, this is to minimize
+    # issues arisen from corrupted data in our local computer
+    db-init:
+        build:
+            dockerfile: ./deploy/local/dockerfiles/server.Dockerfile
+            context: ../../../
+        command: ["php", "artisan", "migrate:refresh", "--seed"]
+        depends_on:
+            mysql:
+                condition: service_healthy
+
+    localstack:
+        image: localstack/localstack:1.2.0
+        healthcheck:
+            test: curl -s localhost:4566/health 2>&1 | grep -c initialized > /dev/null
+        environment:
+            - USE_SINGLE_REGION=true
+            - DEFAULT_REGION=eu-west-1
+            - DISABLE_CORS_CHECKS=1
+            - BUCKET_NAME=example-bucket
+        volumes:
+            - ../scripts/init-localstack.sh:/docker-entrypoint-initaws.d/init-localstack.sh
+        ports:
+            - '4566:4566'
+
+    server:
+        build:
+            dockerfile: ./deploy/local/dockerfiles/server.Dockerfile
+            context: ../../../
+        ports:
+            - '8070:8070'
+        depends_on:
+            db-init:
+                condition: service_completed_successfully
+            localstack:
+                condition: service_healthy
+        volumes:
+            - ../../../:/jepret/
+
+    client:
+        build:
+            dockerfile: ./deploy/local/dockerfiles/client.Dockerfile
+            context: ../../../
+        ports:
+            - '8080:8080'
+        depends_on:
+            server:
+                condition: service_started
+        environment:
+            - VITE_BASE_URL=http://localhost:8080
+            - VITE_API_BASE_URL=http://localhost:8070
+        volumes:
+            - ../../../client/:/jepret-client/

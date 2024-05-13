@@ -106,3 +106,9 @@ dialog#modalCreatePost > article > header > p {
     font-size: 1.2rem;
     font-weight: bold;
 }
+
+p.alert-error {
+    text-align: center;
+    margin-bottom: 0;
+    color: red;
+}
