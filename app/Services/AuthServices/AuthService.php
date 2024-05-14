@@ -5,6 +5,7 @@ namespace App\Services\AuthServices;
 use App\Enums\AuthEnum;
 use App\Repositories\Token\TokenRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Class AuthService
@@ -42,13 +43,11 @@ class AuthService implements AuthServiceInterface
         // Retrieve user by email
         $user = $this->userRepository->getByEmail($email);
 
-        // If user does not exist or password does not match, authentication fails
-        if (!$user || $user->password !== $password) {
+        if ($user && Hash::check($password, $user->password)) {
+            return true;
+        } else {
             return false;
         }
-
-        // Authentication successful
-        return true;
     }
 
     /**
