@@ -33,39 +33,9 @@ function MainPage() {
     };
 
     const handleImageSelection = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setSelectedImage(file);
-            uploadImage(file);
-        }
-    };
-
-    const uploadImage = async (file) => {
-        try {
-            // Fetch the presigned URL from your backend
-            const response = await axiosClient.post("/photo-urls"); // Adjust this as needed if it's a GET request
-            const uploadURL = response.data.data.photo_url; // Make sure you are accessing the URL correctly based on your API response
-            // Upload the file to the presigned URL
-            uploadToS3(
-                uploadURL,
-                file,
-                (progress) => {
-                    const percentage = Math.round(progress * 100);
-                    setUploadProgress(percentage); // Update state with upload progress
-                },
-                (response) => {
-                    alert("File uploaded successfully");
-                    console.log("Upload response:", response);
-                    // Here you might want to clear selections or handle next steps
-                },
-                (error) => {
-                    console.error("Upload error:", error);
-                    alert(error);
-                }
-            );
-        } catch (error) {
-            console.error("Error fetching upload URL", error);
-            alert("Could not fetch upload URL.");
+        if (event.target.files && event.target.files[0]) {
+            setImagePreviewUrl(URL.createObjectURL(event.target.files[0]));
+            setSelectedImage(event.target.files[0]);
         }
     };
 
@@ -100,14 +70,11 @@ function MainPage() {
             // Get the presigned URL for the upload
             const uploadConfig = await axiosClient.post("/photo-urls");
             const { photo_url } = uploadConfig.data.data;
-            console.log("UPLOAD CONFIG", uploadConfig);
-            console.log("PHOTO_URL", photo_url);
             const uploadResponse = await uploadToS3(
                 photo_url,
                 selectedImage,
                 setUploadProgress
             );
-            console.log(uploadResponse);
             // After successful upload, submit the post details
             if (uploadResponse.status === 200) {
                 const submitResponse = await axiosClient.post("/posts", {
