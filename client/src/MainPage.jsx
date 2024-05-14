@@ -69,37 +69,24 @@ function MainPage() {
         }
     };
 
-    function uploadToS3(uploadURL, file, onProgress, onSuccess, onError) {
-        const xhr = new XMLHttpRequest();
-
-        // Listen for the upload progress event
-        xhr.upload.onprogress = function (event) {
-            if (event.lengthComputable) {
-                const progress = event.loaded / event.total;
-                onProgress(progress); // Call the onProgress callback with the upload progress percentage
-            }
-        };
-
-        // Setup the onload event to handle when the request is complete
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                onSuccess(xhr.response); // Call onSuccess callback if upload is successful
-            } else {
-                onError(
-                    `Failed to upload file: ${xhr.status} ${xhr.statusText}`
-                ); // Call onError callback if upload fails
-            }
-        };
-
-        // Handle any errors that occur during the network request
-        xhr.onerror = function () {
-            onError("Failed to execute upload"); // Call onError callback on network error
-        };
-
-        // Configure the HTTP PUT request
-        xhr.open("PUT", uploadURL, true);
-        xhr.setRequestHeader("x-amz-acl", "public-read"); // Set necessary headers, such as permissions
-        xhr.send(file); // Send the file data
+    function uploadToS3(uploadURL, file, onProgress) {
+        return new Promise((resolve) => {
+            const xhr = new XMLHttpRequest();
+            xhr.upload.addEventListener("progress", (e) => {
+                if (e.lengthComputable) {
+                    onProgress(e.loaded / e.total);
+                }
+            });
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState !== xhr.DONE) {
+                    return;
+                }
+                resolve({ status: xhr.status, body: xhr.responseText });
+            };
+            xhr.open("PUT", uploadURL, true);
+            xhr.setRequestHeader("x-amz-acl", "public-read");
+            xhr.send(file);
+        });
     }
 
     const handleSubmit = async (event) => {
@@ -112,17 +99,19 @@ function MainPage() {
         try {
             // Get the presigned URL for the upload
             const uploadConfig = await axiosClient.post("/photo-urls");
-            const { url } = uploadConfig.data;
+            const { photo_url } = uploadConfig.data.data;
+            console.log("UPLOAD CONFIG", uploadConfig);
+            console.log("PHOTO_URL", photo_url);
             const uploadResponse = await uploadToS3(
-                url,
+                photo_url,
                 selectedImage,
                 setUploadProgress
             );
-
+            console.log(uploadResponse);
             // After successful upload, submit the post details
             if (uploadResponse.status === 200) {
                 const submitResponse = await axiosClient.post("/posts", {
-                    photo_url: url.split("?")[0], // Assuming URL needs to be cleaned from parameters
+                    photo_url: photo_url.split("?")[0], // Assuming URL needs to be cleaned from parameters
                     caption,
                 });
 
