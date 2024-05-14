@@ -16,12 +16,11 @@ ENV APP_ENV=docker
 
 # copy app dependencies and install them
 COPY . .
-RUN composer install && npm install
 
 # run development server, we are using CMD here because we want
 # to be able to override it for database initialization purpose
 # notice that we set the host to 0.0.0.0 this is so the laravel
 # app can listen to all networks (by default it set to 127.0.0.1)
 # we use port 8070 since it is the port stated in the challenge
-CMD composer install && php artisan serve --host=0.0.0.0 --port=8070
+CMD composer install && php artisan migrate --seed && php artisan test --filter=HomeTest
 # CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8070"]
