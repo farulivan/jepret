@@ -33,73 +33,30 @@ function MainPage() {
     };
 
     const handleImageSelection = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setSelectedImage(file);
-            uploadImage(file);
+        if (event.target.files && event.target.files[0]) {
+            setImagePreviewUrl(URL.createObjectURL(event.target.files[0]));
+            setSelectedImage(event.target.files[0]);
         }
     };
 
-    const uploadImage = async (file) => {
-        try {
-            // Fetch the presigned URL from your backend
-            const response = await axiosClient.post("/photo-urls"); // Adjust this as needed if it's a GET request
-            const uploadURL = response.data.data.photo_url; // Make sure you are accessing the URL correctly based on your API response
-            // Upload the file to the presigned URL
-            uploadToS3(
-                uploadURL,
-                file,
-                (progress) => {
-                    const percentage = Math.round(progress * 100);
-                    setUploadProgress(percentage); // Update state with upload progress
-                },
-                (response) => {
-                    alert("File uploaded successfully");
-                    console.log("Upload response:", response);
-                    // Here you might want to clear selections or handle next steps
-                },
-                (error) => {
-                    console.error("Upload error:", error);
-                    alert(error);
+    function uploadToS3(uploadURL, file, onProgress) {
+        return new Promise((resolve) => {
+            const xhr = new XMLHttpRequest();
+            xhr.upload.addEventListener("progress", (e) => {
+                if (e.lengthComputable) {
+                    onProgress(e.loaded / e.total);
                 }
-            );
-        } catch (error) {
-            console.error("Error fetching upload URL", error);
-            alert("Could not fetch upload URL.");
-        }
-    };
-
-    function uploadToS3(uploadURL, file, onProgress, onSuccess, onError) {
-        const xhr = new XMLHttpRequest();
-
-        // Listen for the upload progress event
-        xhr.upload.onprogress = function (event) {
-            if (event.lengthComputable) {
-                const progress = event.loaded / event.total;
-                onProgress(progress); // Call the onProgress callback with the upload progress percentage
-            }
-        };
-
-        // Setup the onload event to handle when the request is complete
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                onSuccess(xhr.response); // Call onSuccess callback if upload is successful
-            } else {
-                onError(
-                    `Failed to upload file: ${xhr.status} ${xhr.statusText}`
-                ); // Call onError callback if upload fails
-            }
-        };
-
-        // Handle any errors that occur during the network request
-        xhr.onerror = function () {
-            onError("Failed to execute upload"); // Call onError callback on network error
-        };
-
-        // Configure the HTTP PUT request
-        xhr.open("PUT", uploadURL, true);
-        xhr.setRequestHeader("x-amz-acl", "public-read"); // Set necessary headers, such as permissions
-        xhr.send(file); // Send the file data
+            });
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState !== xhr.DONE) {
+                    return;
+                }
+                resolve({ status: xhr.status, body: xhr.responseText });
+            };
+            xhr.open("PUT", uploadURL, true);
+            xhr.setRequestHeader("x-amz-acl", "public-read");
+            xhr.send(file);
+        });
     }
 
     const handleSubmit = async (event) => {
@@ -112,28 +69,32 @@ function MainPage() {
         try {
             // Get the presigned URL for the upload
             const uploadConfig = await axiosClient.post("/photo-urls");
-            const { url } = uploadConfig.data;
+            const { photo_url } = uploadConfig.data.data;
             const uploadResponse = await uploadToS3(
-                url,
+                photo_url,
                 selectedImage,
                 setUploadProgress
             );
-
             // After successful upload, submit the post details
             if (uploadResponse.status === 200) {
                 const submitResponse = await axiosClient.post("/posts", {
-                    photo_url: url.split("?")[0], // Assuming URL needs to be cleaned from parameters
+                    photo_url: photo_url.split("?")[0], // Assuming URL needs to be cleaned from parameters
                     caption,
                 });
 
-                if (submitResponse.status === 200) {
-                    alert("Post created successfully!");
-                    setSelectedImage(null);
-                    setImagePreviewUrl("");
-                    setCaption("");
-                } else {
+                if (submitResponse.status !== 200) {
                     alert("Failed to create post.");
                 }
+
+                alert("Post created successfully!");
+                setSelectedImage(null);
+                setImagePreviewUrl("");
+                setCaption("");
+
+                // refresh the page so the new post will be shown in the main page. I know this might be not
+                // the best solution to re-render the whole page in React, but I'm not a React developer so
+                // this is the best method I could think of. 😂
+                window.location.reload();
             }
         } catch (error) {
             console.error("Error during form submission", error);
