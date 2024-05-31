@@ -82,14 +82,19 @@ function MainPage() {
                     caption,
                 });
 
-                if (submitResponse.status === 200) {
-                    alert("Post created successfully!");
-                    setSelectedImage(null);
-                    setImagePreviewUrl("");
-                    setCaption("");
-                } else {
+                if (submitResponse.status !== 200) {
                     alert("Failed to create post.");
                 }
+
+                alert("Post created successfully!");
+                setSelectedImage(null);
+                setImagePreviewUrl("");
+                setCaption("");
+
+                // refresh the page so the new post will be shown in the main page. I know this might be not
+                // the best solution to re-render the whole page in React, but I'm not a React developer so
+                // this is the best method I could think of. 😂
+                window.location.reload();
             }
         } catch (error) {
             console.error("Error during form submission", error);
