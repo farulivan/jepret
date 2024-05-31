@@ -48,7 +48,7 @@ class PostService implements PostServiceInterface
         // URL berlaku selama 15 menit
         $presignedRequest = $s3Client->createPresignedRequest($cmd, '+15 minutes');
 
-        return (string)$presignedRequest->getUri();
+        return str_replace('localstack', 'localhost', (string)$presignedRequest->getUri());
     }
 
     public function store(string $token, array $data)
