@@ -6,13 +6,19 @@ RUN apt-get update -y &&\
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN docker-php-ext-install pdo mysqli pdo_mysql && docker-php-ext-enable pdo_mysql
+RUN apt-get install -y \
+		libfreetype-dev \
+		libjpeg62-turbo-dev \
+		libpng-dev \
+	&& docker-php-ext-configure gd --with-freetype --with-jpeg \
+	&& docker-php-ext-install -j$(nproc) gd
 
 # set work directory
 WORKDIR /jepret
 
 # set the value of `APP_ENV` to `docker` so it will load
 # `.env.docker` for settings
-ENV APP_ENV=docker
+ENV APP_ENV=testing
 
 # copy app dependencies and install them
 COPY . .

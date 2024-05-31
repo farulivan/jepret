@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  # we should always execute the CI pipeline whenever there is a push to the master or staging branch
+  push:
+    branches:
+      - 'master'
+      - 'staging'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+  # we also need to execute the CI pipeline whenever there is a pull request, this is to let the contributor
+  # know if the changes they are proposing are breaking the tests or not
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: make test
